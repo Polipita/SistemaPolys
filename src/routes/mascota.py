@@ -6,29 +6,24 @@ from src.models.cliente import Cliente
 
 mascota_bp = Blueprint('mascota', __name__, url_prefix='/api/mascotas')
 
-# --- RUTA 1: CREAR UNA NUEVA MASCOTA (POST) ---
 @mascota_bp.route('/', methods=['POST'])
-@jwt_required()  # <--- ¡EL GUARDIÁN! Sin token no pasas
+@jwt_required()  
 def crear_mascota():
     try:
-        # 1. Obtenemos los datos del "Brazalete" (Token)
-        claims = get_jwt() # Leemos los datos extra que guardamos en el login
-        mi_empresa_id = claims['empresa_id'] # ¡Aquí está la magia SaaS!
+        claims = get_jwt() 
+        mi_empresa_id = claims['empresa_id'] 
 
-        # 2. Recibimos los datos del formulario (JSON)
         data = request.get_json()
 
-        # (Validación rápida: Verificar que envíen cliente_id)
         if not data.get('clientes_id'):
             return jsonify({'error': 'Debes indicar el ID del dueño (clientes_id)'}), 400
 
-        # 3. Creamos la mascota asignándole la empresa del token automáticmente
         nueva_mascota = Mascota(
             nombre=data['nombre'],
-            raza=data.get('raza'), # .get() por si no lo envían (es opcional)
-            fecha_nacimiento=None, # Lo dejamos null por ahora para facilitar la prueba
+            raza=data.get('raza'),
+            fecha_nacimiento=None, 
             clientes_id=data['clientes_id'],
-            empresas_id=mi_empresa_id # <--- SE ASIGNA SOLO, NO LO PIDE EL USUARIO
+            empresas_id=mi_empresa_id
         )
 
         db.session.add(nueva_mascota)
@@ -40,18 +35,14 @@ def crear_mascota():
         return jsonify({'error': str(e)}), 500
 
 
-# --- RUTA 2: LISTAR SOLO MIS MASCOTAS (GET) ---
 @mascota_bp.route('/', methods=['GET'])
 @jwt_required()
 def listar_mis_mascotas():
-    # 1. Leemos de qué empresa es el usuario que pregunta
     claims = get_jwt()
     mi_empresa_id = claims['empresa_id']
 
-    # 2. FILTRO SAAS: "Select * from mascotas WHERE empresa_id = MI_EMPRESA"
     mascotas = Mascota.query.filter_by(empresas_id=mi_empresa_id).all()
 
-    # 3. Convertimos los objetos a JSON (Serialización manual por ahora)
     resultado = []
     for m in mascotas:
         resultado.append({

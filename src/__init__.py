@@ -19,7 +19,7 @@ def create_app():
     from src.routes.producto_routes import producto_bp
     from src.routes.venta_routes import venta_bp
 
-    # Lo registramos en la app
+    # registrar en la app para la ruta
     app.register_blueprint(auth_bp)
     app.register_blueprint(mascota_bp)
     app.register_blueprint(historia_bp)

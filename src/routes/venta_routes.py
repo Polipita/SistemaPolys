@@ -96,8 +96,7 @@ def reporte_ventas():
         inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d')
         fin = datetime.strptime(fecha_fin_str + " 23:59:59", '%Y-%m-%d %H:%M:%S')
 
-        # 2. LA CONSULTA MAESTRA (SQLAlchemy)
-        # Queremos: Nombre, Tipo, Suma de Cantidad, Suma de Dinero
+        #  Nombre, Tipo, Suma de Cantidad, Suma de Dinero
         resultados = db.session.query(
             Producto.nombre,
             Producto.tipo,
