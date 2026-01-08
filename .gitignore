@@ -1,16 +1,9 @@
 venv/
 env/
 .env
-
 *.pyc
 __pycache__/
 *.db
-
 *.log
-
-requirements.txt
-
-config.py
-
 instance/
 .DS_Store
